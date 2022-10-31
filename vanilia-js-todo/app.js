@@ -3,11 +3,26 @@ document.querySelector('form').addEventListener('submit', handleSubmitForm);
 document.querySelector('ul').addEventListener('click', handleClick);
 document.getElementById('clearAll').addEventListener('click', handleDeleteClick);
 
+
+
+
+
+
+
+
+//for(let i = 0; i < jso.length; i++) {
+//  let obj = jso[i];
+
+//}
+
+
 function handleSubmitForm(e) {
     e.preventDefault();
     let input = document.querySelector('input');
-    if (input.value !== '')
+    if (input.value !== '') {
         addTodo(input.value);
+        sendData(input.value);
+    }
     input.value = '';
 }
 
@@ -23,7 +38,34 @@ function addTodo(todo) {
 
     li.classList.add('todo-list-item')
     ul.appendChild(li)
+
 }
+
+const todos = fetch('http://localhost:8000/sajt').then((response) => response.json()).then((data) => {return data;})
+addFetchedTodo();
+
+function addFetchedTodo() {
+    todos.then((todo) => {
+        console.log(todo)
+        for(let i = 0; i < todo.length; i++) {
+        let obj = todo[i];
+        addTodo(obj.todo);
+    }})
+
+
+}
+
+
+
+
+function sendData(data) {
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    let payloadString = JSON.stringify(data);
+    xhr.send(payloadString);
+}
+
 
 function handleClick(e) {
     if (e.target.name === 'checkButton') {
@@ -49,9 +91,9 @@ function checkTodo(e) {
 function deleteTodo(e) {
     let item = e.target.parentNode;
 
-    item.addEventListener('transitionend', function() {
+    item.addEventListener('transitionend', function () {
         item.remove();
-    } )
+    })
 
     item.classList.add('todo-list-item-fall');
 
