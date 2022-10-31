@@ -8,111 +8,87 @@ const url = require("url");
 const StringDecoder = require("string_decoder").StringDecoder;
 const myModule = require('./database');
 
-//myModule.createDB();
 
-//myModule.loadDB();
-//myModule.deleteEntry("sas");
-//myModule.updateEntry("safa2","söt");
-
-/*const server = http.createServer(function(req, res) {
-    //console.log(req.url);
-    let parsedURL = url.parse(req.url, true);
-    let path = parsedURL.pathname;
-    // parsedURL.pathname  parsedURL.query
-    // standardize the requested url by removing any '/' at the start or end
-    // '/folder/to/file/' becomes 'folder/to/file'
-    path = path.replace(/^\/+|\/+$/g, "");
-    console.log(path);
-    let qs = parsedURL.query;
-    let headers = req.headers;
-    let method = req.method.toLowerCase();
-
-    req.on("data", function() {
-        console.log("got some data");
-        //if no data is passed we don't see this messagee
-        //but we still need the handler so the "end" function works.
-    });
-    req.on("end", function() {
-        //request part is finished... we can send a response now
-        console.log("send a response");
-        //we will use the standardized version of the path
-        let route =
-            typeof routes[path] !== "undefined" ? routes[path] : routes["notFound"];
-        let data = {
-            path: path,
-            queryString: qs,
-            headers: headers,
-            method: method
-        };
-        //pass data incase we need info about the request
-        //pass the response object because router is outside our scope
-        route(data, res);
-    });
-});
-
-server.listen(1234, function() {
-    console.log("Listening on port 1234");
-});
-*/
-
+if (!fs.existsSync(__dirname+'/db')){
+    fs.mkdirSync(__dirname+'/db');
+    myModule.createDB();
+}
 
 http.createServer(function (request, response) {
 
     const requestURL = request.url;
 
-    if(requestURL === "/styles.css"){
+    if(request.method === 'GET' && requestURL === "/styles.css"){
         serveCSS(request, response);
-    }else if(requestURL === "/app.js"){
+    }else if(request.method === 'GET' && requestURL === "/app.js"){
         serveApp(request, response);
-    }else if(requestURL === "/sajt"){
-
+    }else if(request.method === 'GET' && requestURL === "/data"){
         servData(request, response);
-    }else if(requestURL === '/index.html?'){
+    }else if(request.method === 'GET' && requestURL === '/index.html?'){
         serveHTML(request, response);
-    }else{
+    }else if(request.method === 'GET' ){
         serveHTML(request, response);
     }
 
-    if(request.method === 'POST') {
-        postHandler(request, response);
+    if(request.method === 'POST' && requestURL === '/addTodo') {
+        addHandler(request, response);
+    }else if(request.method === 'POST' && requestURL === '/update') {
+        updateHandler(request, response);
+    }else if(request.method === 'POST' && requestURL === '/delete') {
+        deleteHandler(request, response);
     }
+    else if(request.method === 'POST' && requestURL === '/deleteAll') {
+        deleteAllHandler();
+    }
+
 
 }).listen(8000);
 
-const postHandler = function (req, res) {
+const addHandler = function (req, res) {
     let buffer = "";
     let decoder = new StringDecoder('utf-8');
 
     req.on('data', function (data) {
         buffer += decoder.write(data)
-
         const obj = {};
         obj['todo'] = data.toString();
-
         myModule.addElement(buffer,0);
-
     })
 }
 
-const getHandler = (req, res) => {
+const updateHandler = function (req, res) {
+    let buffer = "";
+    let decoder = new StringDecoder('utf-8');
 
-    http.get('http://localhost:8000/',(req, res) => {
-        res.json(JSON.stringify(toDosToDisplay));
-
+    req.on('data', function (data) {
+        let obj = JSON.parse(data);
+        myModule.updateElement(obj['todo'],obj['done']);
     })
 }
+
+const deleteHandler = function (req, res) {
+    let buffer = "";
+    let decoder = new StringDecoder('utf-8');
+
+    req.on('data', function (data) {
+        let obj = JSON.parse(data);
+        myModule.deleteElement(obj['todo']);
+    })
+}
+
+const deleteAllHandler = function (req, res) {
+    myModule.deleteAllElements();
+}
+
 
 const servData = function (request, response) {
 
     let toDosToDisplay =[]
 
     let v = myModule.loadDB().then((result) => {
-
         for (let key in result) {
-            console.log("something: "+result[key].todo);
             toDosToDisplay.push(result[key]);
         }
-
     response.writeHeader(200, {"Content-Type": "application/json"});
     response.write(JSON.stringify(toDosToDisplay));
     response.end();
@@ -137,65 +113,4 @@ const serveCSS = function (req, res) {
 
 const serveApp = function (req, res) {
     fs.createReadStream(__dirname + req.url, 'UTF-8').pipe(res);
-};
-
-
-//define functions for the different Routes
-//This object and the functions could be defined in another file that we import
-//Each route has a function that takes two parameters
-//data: the info about the request
-//callback: the function to call to send the response
-let routes = {
-    kenny: function (data, res) {
-        // this function called if the path is 'kenny'
-        let payload = {
-            name: "Kenny"
-        };
-        let payloadStr = JSON.stringify(payload);
-        res.setHeader("Content-Type", "application/json");
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.writeHead(200);
-        res.write(payloadStr);
-        res.end("\n");
-    },
-    cartman: function (data, res) {
-        // this function called if the path is 'cartman'
-        let payload = {
-            name: "Cartman"
-        };
-        let payloadStr = JSON.stringify(payload);
-        res.setHeader("Content-Type", "application/json");
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.writeHead(200);
-        res.write(payloadStr);
-        res.end("\n");
-    },
-    "kenny/is/mysterion": function (data, res) {
-        //this function called if path is 'kenny/is/mysterion'
-        let payload = {
-            name: "Mysterion",
-            enemy: "The Coon",
-            today: +new Date()
-        };
-        let payloadStr = JSON.stringify(payload);
-        res.setHeader("Content-Type", "application/json");
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.writeHead(200);
-        res.write(payloadStr);
-        res.end("\n");
-    },
-    notFound: function (data, res) {
-        //this one gets called if no route matches
-        let payload = {
-            message: "File Not Found",
-            code: 404
-        };
-        let payloadStr = JSON.stringify(payload);
-        res.setHeader("Content-Type", "application/json");
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.writeHead(404);
-
-        res.write(payloadStr);
-        res.end("\n");
-    }
 };
