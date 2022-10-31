@@ -1,10 +1,18 @@
 // A BASIC Node server
 // Routing Requests
 
+
 const http = require("http");
 fs = require('fs');
 const url = require("url");
 const StringDecoder = require("string_decoder").StringDecoder;
+const myModule = require('./database');
+
+//myModule.createDB();
+
+//myModule.loadDB();
+//myModule.deleteEntry("sas");
+//myModule.updateEntry("safa2","söt");
 
 /*const server = http.createServer(function(req, res) {
     //console.log(req.url);
@@ -47,10 +55,6 @@ server.listen(1234, function() {
 });
 */
 
-let toDosToDisplay =[{'todo':'to wash'},
-            {'todo':'to fish'},
-            {'todo':'to cook'}]
-
 
 http.createServer(function (request, response) {
 
@@ -61,6 +65,7 @@ http.createServer(function (request, response) {
     }else if(requestURL === "/app.js"){
         serveApp(request, response);
     }else if(requestURL === "/sajt"){
+
         servData(request, response);
     }else if(requestURL === '/index.html?'){
         serveHTML(request, response);
@@ -83,7 +88,8 @@ const postHandler = function (req, res) {
 
         const obj = {};
         obj['todo'] = data.toString();
-        toDosToDisplay.push(obj);
+
+        myModule.addElement(buffer,0);
 
     })
 }
@@ -97,9 +103,20 @@ const getHandler = (req, res) => {
 }
 
 const servData = function (request, response) {
+
+    let toDosToDisplay =[]
+
+    let v = myModule.loadDB().then((result) => {
+
+        for (let key in result) {
+            console.log("something: "+result[key].todo);
+            toDosToDisplay.push(result[key]);
+        }
+
     response.writeHeader(200, {"Content-Type": "application/json"});
     response.write(JSON.stringify(toDosToDisplay));
     response.end();
+    });
 }
 
 const serveHTML = function (request, response) {
