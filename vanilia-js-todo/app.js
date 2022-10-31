@@ -3,10 +3,8 @@ document.querySelector('form').addEventListener('submit', handleSubmitForm);
 document.querySelector('ul').addEventListener('click', handleClick);
 document.getElementById('clearAll').addEventListener('click', handleDeleteClick);
 
-
 const todos = fetch('http://localhost:8000/data').then((response) => response.json()).then((data) => {return data;})
 addFetchedTodo();
-
 
 
 function handleSubmitForm(e) {
@@ -32,7 +30,7 @@ function addTodo(todo,done) {
     li.classList.add('todo-list-item')
 
     ul.appendChild(li)
-    if(done==true) {
+    if(done===true) {
         li.style.textDecoration="line-through"
     }else{
         li.style.textDecoration="none"
@@ -50,7 +48,6 @@ function addFetchedTodo() {
             addTodo(obj.todo,false);
         }
     }})
-
 
 }
 

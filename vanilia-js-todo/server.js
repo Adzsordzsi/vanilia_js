@@ -4,7 +4,6 @@
 
 const http = require("http");
 fs = require('fs');
-const url = require("url");
 const StringDecoder = require("string_decoder").StringDecoder;
 const myModule = require('./database');
 
@@ -31,9 +30,9 @@ http.createServer(function (request, response) {
     }
 
     if(request.method === 'POST' && requestURL === '/addTodo') {
-        addHandler(request, response);
+        addHandler(request);
     }else if(request.method === 'POST' && requestURL === '/update') {
-        updateHandler(request, response);
+        updateHandler(request);
     }else if(request.method === 'POST' && requestURL === '/delete') {
         deleteHandler(request, response);
     }
@@ -44,7 +43,7 @@ http.createServer(function (request, response) {
 
 }).listen(8000);
 
-const addHandler = function (req, res) {
+const addHandler = function (req) {
     let buffer = "";
     let decoder = new StringDecoder('utf-8');
 
@@ -52,13 +51,11 @@ const addHandler = function (req, res) {
         buffer += decoder.write(data)
         const obj = {};
         obj['todo'] = data.toString();
-        myModule.addElement(buffer,0);
+        myModule.addElement(buffer);
     })
 }
 
-const updateHandler = function (req, res) {
-    let buffer = "";
-    let decoder = new StringDecoder('utf-8');
+const updateHandler = function (req) {
 
     req.on('data', function (data) {
         let obj = JSON.parse(data);
@@ -66,9 +63,7 @@ const updateHandler = function (req, res) {
     })
 }
 
-const deleteHandler = function (req, res) {
-    let buffer = "";
-    let decoder = new StringDecoder('utf-8');
+const deleteHandler = function (req) {
 
     req.on('data', function (data) {
         let obj = JSON.parse(data);
@@ -76,7 +71,7 @@ const deleteHandler = function (req, res) {
     })
 }
 
-const deleteAllHandler = function (req, res) {
+const deleteAllHandler = function () {
     myModule.deleteAllElements();
 }
 
@@ -85,7 +80,7 @@ const servData = function (request, response) {
 
     let toDosToDisplay =[]
 
-    let v = myModule.loadDB().then((result) => {
+    myModule.loadDB().then((result) => {
         for (let key in result) {
             toDosToDisplay.push(result[key]);
         }

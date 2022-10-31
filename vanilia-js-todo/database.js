@@ -1,14 +1,13 @@
-const fs = require("fs");
 const path = require("path");
 const sqlite3 = require('sqlite3').verbose();
 
 module.exports = {
-    addElement: function (todo,done) {
+    addElement: function (todo) {
 
         let db = connect();
 
         // insert one row into the todos table
-        db.run(`INSERT INTO todos (todo,done) VALUES(?,?)`, [todo,done], function(err) {
+        db.run(`INSERT INTO todos (todo,done) VALUES(?,0)`, todo, function(err) {
             if (err) {
                 return console.log(err.message);
             }
@@ -39,7 +38,7 @@ module.exports = {
 
 
     loadDB: function () {
-         var todoList = [];
+        const todoList = [];
 
         // open the database and load data from todos table
         let db = connect()
@@ -78,7 +77,7 @@ module.exports = {
         close(db)
     },
 
-    deleteAllEntries: function () {
+    deleteAllElements: function () {
         let db = connect()
 
         db.run("DELETE FROM todos ", function(err) {
