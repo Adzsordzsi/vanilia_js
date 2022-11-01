@@ -6,12 +6,16 @@ const http = require("http");
 fs = require('fs');
 const StringDecoder = require("string_decoder").StringDecoder;
 const myModule = require('./database');
+const config = require('./config');
 
 
 if (!fs.existsSync(__dirname+'/db')){
     fs.mkdirSync(__dirname+'/db');
     myModule.createDB();
+} else if(!fs.existsSync(__dirname+'/db/'+config.db.name)){
+    myModule.createDB();
 }
+
 
 http.createServer(function (request, response) {
 
@@ -23,8 +27,6 @@ http.createServer(function (request, response) {
         serveApp(request, response);
     }else if(request.method === 'GET' && requestURL === "/data"){
         servData(request, response);
-    }else if(request.method === 'GET' && requestURL === '/index.html?'){
-        serveHTML(request, response);
     }else if(request.method === 'GET' ){
         serveHTML(request, response);
     }
@@ -35,13 +37,13 @@ http.createServer(function (request, response) {
         updateHandler(request);
     }else if(request.method === 'POST' && requestURL === '/delete') {
         deleteHandler(request, response);
-    }
-    else if(request.method === 'POST' && requestURL === '/deleteAll') {
+    } else if(request.method === 'POST' && requestURL === '/deleteAll') {
         deleteAllHandler();
     }
 
+}).listen(config.app.httpPORT);
 
-}).listen(8000);
+console.log('Server running on port ' + config.app.httpPORT +" and "+ config.db.name)
 
 const addHandler = function (req) {
     let buffer = "";

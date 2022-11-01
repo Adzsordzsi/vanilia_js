@@ -1,9 +1,10 @@
 //selectors
+//const config = require('./config');
 document.querySelector('form').addEventListener('submit', handleSubmitForm);
 document.querySelector('ul').addEventListener('click', handleClick);
 document.getElementById('clearAll').addEventListener('click', handleDeleteClick);
 
-const todos = fetch('http://localhost:8000/data').then((response) => response.json()).then((data) => {return data;})
+const todos = fetch(window.location.href+'data').then((response) => response.json()).then((data) => {return data;})
 addFetchedTodo();
 
 

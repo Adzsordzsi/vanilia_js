@@ -1,5 +1,6 @@
 const path = require("path");
 const sqlite3 = require('sqlite3').verbose();
+const config = require('./config');
 
 module.exports = {
     addElement: function (todo) {
@@ -21,15 +22,16 @@ module.exports = {
     },
 
     createDB: function () {
+        console.log("creating: "+ path.join(__dirname, "/db/"+config.db.name));
 
-        let db = new sqlite3.Database(path.join(__dirname, "/db/database.db"));
+        let db = new sqlite3.Database(path.join(__dirname, "/db/"+config.db.name));
 
         // create table todos
         db.run("CREATE TABLE IF NOT EXISTS  todos(todo text, done int)", function (err) {
             if (err) {
                 return console.log(err.message);
             }
-            console.log(`A table has been created with name todos`);
+            console.log("Created database with name"+config.db.name +" and table todos");
         });
 
         // close the database connection
@@ -39,6 +41,7 @@ module.exports = {
 
     loadDB: function () {
         const todoList = [];
+        console.log("Loading")
 
         // open the database and load data from todos table
         let db = connect()
@@ -107,7 +110,8 @@ module.exports = {
 }
 
 function connect() {
-    return new sqlite3.Database(path.join(__dirname, "/db/database.db"), sqlite3.OPEN_READWRITE, (err) => {
+    console.log("Loading: "+ path.join(__dirname, "/db/"+config.db.name))
+    return new sqlite3.Database(path.join(__dirname, "/db/"+config.db.name), sqlite3.OPEN_READWRITE, (err) => {
         if (err) {
             console.error(err.message);
         }

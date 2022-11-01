@@ -5,11 +5,16 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "npm run development",
+    "development": "NODE_ENV=development node server.js",
+    "prod": "npm run production",
+    "production": "NODE_ENV=production node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.8",
     "sqlite3": "^5.1.2"
   }
 }
