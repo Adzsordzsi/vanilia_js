@@ -4,4 +4,4 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 EXPOSE 8000
-CMD [ "node", "server.js" ]
+CMD [ "NODE_ENV=production node", "server.js" ]
