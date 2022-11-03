@@ -27,11 +27,11 @@ environments.production =  {
         name: 'prod.db'
     }
 };
-console.log("env: " + process.env.NODE_ENV)
+
 var currEnvironment = typeof (process.env.NODE_ENV) == 'string' ? process.env.NODE_ENV : '';
 
 // Export the environment
 var config = typeof (environments[currEnvironment]) == 'object' ? environments[currEnvironment] : environments.dev;
-
+console.log("Running in: " + config.app.envName)
 // Export environments module
 module.exports = config;
