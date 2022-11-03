@@ -23,21 +23,29 @@ http.createServer(function (request, response) {
 
     if(request.method === 'GET' && requestURL === "/styles.css"){
         serveCSS(request, response);
+        console.log('Styles.css was loaded successfully');
     }else if(request.method === 'GET' && requestURL === "/app.js"){
         serveApp(request, response);
+        console.log('App.js was loaded successfully');
     }else if(request.method === 'GET' && requestURL === "/data"){
         servData(request, response);
+        console.log('Data from backend was loaded successfully');
     }else if(request.method === 'GET' ){
         serveHTML(request, response);
+        console.log('index.html was loaded successfully');
     }
 
     if(request.method === 'POST' && requestURL === '/addTodo') {
+        console.log('Add request was detected');
         addHandler(request);
     }else if(request.method === 'POST' && requestURL === '/update') {
+        console.log('Update request was detected');
         updateHandler(request);
     }else if(request.method === 'POST' && requestURL === '/delete') {
+        console.log('Delete request was detected');
         deleteHandler(request, response);
     } else if(request.method === 'POST' && requestURL === '/deleteAll') {
+        console.log('Delete all request was detected');
         deleteAllHandler();
     }
 

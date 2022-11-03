@@ -31,7 +31,7 @@ module.exports = {
             if (err) {
                 return console.log(err.message);
             }
-            console.log("Created database with name"+config.db.name +" and table todos");
+            console.log("A database was created with name"+config.db.name +" and table todos");
         });
 
         // close the database connection
@@ -41,7 +41,7 @@ module.exports = {
 
     loadDB: function () {
         const todoList = [];
-        console.log("Loading")
+        console.log("Loading Data from Database")
 
         // open the database and load data from todos table
         let db = connect()
@@ -62,7 +62,7 @@ module.exports = {
                 });
                 close(db);
 
-            })
+            });
 
     },
 
@@ -74,7 +74,7 @@ module.exports = {
                 return console.log(err.message);
             }
 
-            console.log(`Deleted from table todos`);
+            console.log(`Entry ${todo} was deleted from the database`);
         });
 
         close(db)
@@ -88,7 +88,7 @@ module.exports = {
                 return console.log(err.message);
             }
 
-            console.log(`Deleted all elements in todos`);
+            console.log(`All Entries were deleted from the database`);
         });
 
         close(db)
@@ -102,7 +102,7 @@ module.exports = {
                 return console.log(err.message);
             }
 
-            console.log(`Updated`);
+            console.log(`Entry ${todo} was successfully updated`);
         });
 
         close(db)
