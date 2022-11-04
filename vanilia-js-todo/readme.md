@@ -7,3 +7,6 @@
 *     http://localhost:8000/
 
 * Die Applikation erstellt dann eine Datenbank, wenn noch keine Vorhanden ist. Wenn eine vorhanden ist, wird es verwendet.
+* 
+* Docker Hub Repository for Docker Image:
+*     https://hub.docker.com/repository/docker/adg1wi/todo-web-app
